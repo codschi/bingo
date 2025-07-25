@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo遊戲製作器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .control-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .control-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .control-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            margin: 0;
+        }
+
+        .layout-option-hidden {
+            display: none;
+        }
+
+        /* 注音符號選擇器樣式 */
+        .phonetic-selector-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 768px) {
+            .phonetic-selector-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+
+        .phonetic-grid {
+            flex: 1;
+        }
+
+        .phonetic-category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .phonetic-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 8px;
+            max-width: 100%;
+        }
+
+        @media (min-width: 769px) {
+            .phonetic-buttons {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+
+        .phonetic-btn {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px 8px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .phonetic-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+
+        .phonetic-btn.selected {
+            background: #007bff;
+            border-color: #0056b3;
+            color: white;
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .phonetic-btn.selected:hover {
+            background: #0056b3;
+            border-color: #004085;
+        }
+
+        .selection-counter {
+            min-width: 200px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            height: fit-content;
+        }
+
+        @media (max-width: 768px) {
+            .selection-counter {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+
+        .counter-display {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .counter-text {
+            color: #666;
+        }
+
+        #selectedCount {
+            color: #007bff;
+            font-size: 24px;
+            transition: color 0.3s ease;
+        }
+
+        #selectedCount.over-limit {
+            color: #dc3545;
+        }
+
+        #requiredCount {
+            color: #28a745;
+            font-size: 20px;
+        }
+
+        .clear-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .clear-btn:hover {
+            background: #c82333;
+        }
+
+        .input-mode-area {
+            transition: opacity 0.3s ease;
+        }
+
+        .input-area {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            resize: vertical;
+        }
+
+        .input-area:focus {
+            border-color: #333;
+            outline: none;
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .generate-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .generate-btn:hover {
+            background: #555;
+        }
+
+        .generate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .preview-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .preview-section.show {
+            display: block;
+        }
+
+        .preview-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .print-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .print-btn:hover {
+            background: #0056b3;
+        }
+
+        .layout-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-layout {
+            display: grid;
+            margin: 0;
+            padding: 10px;
+            width: 100%;
+            height: 100vh;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* 重新設計的佈局系統 - 縱向優先 */
+        .layout-1 {
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+            place-items: center;
+        }
+
+        .layout-2 {
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            place-items: center;
+        }
+
+        .layout-4 {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            place-items: center;
+        }
+
+        .layout-6 {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(3, 1fr);
+            gap: 8px;
+            place-items: center;
+        }
+
+        .layout-8 {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(4, 1fr);
+            gap: 6px;
+            place-items: center;
+        }
+
+        .layout-10 {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(5, 1fr);
+            gap: 5px;
+            place-items: center;
+        }
+
+        .bingo-card {
+            background: white;
+            border: 3px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            aspect-ratio: 1;
+        }
+
+        /* 根據佈局設定具體尺寸以最大化A4空間利用 */
+        .layout-1 .bingo-card {
+            width: min(80vh, 80vw);
+            height: min(80vh, 80vw);
+        }
+
+        .layout-2 .bingo-card {
+            width: min(35vh, 40vw);
+            height: min(35vh, 40vw);
+        }
+
+        .layout-4 .bingo-card {
+            width: min(30vh, 35vw);
+            height: min(30vh, 35vw);
+        }
+
+        .layout-6 .bingo-card {
+            width: min(25vh, 28vw);
+            height: min(25vh, 28vw);
+        }
+
+        .layout-8 .bingo-card {
+            width: min(20vh, 22vw);
+            height: min(20vh, 22vw);
+        }
+
+        .layout-10 .bingo-card {
+            width: min(16vh, 20vw);
+            height: min(16vh, 20vw);
+        }
+
+        /* 完整的虛線切割線系統 */
+        .page-layout::before,
+        .page-layout::after {
+            content: '';
+            position: absolute;
+            z-index: 10;
+            border-color: #999;
+            border-style: dashed;
+            border-width: 0;
+        }
+
+        /* 2個/頁：1條水平線 */
+        .layout-2::after {
+            top: 50%;
+            left: 0;
+            right: 0;
+            border-top-width: 2px;
+        }
+
+        /* 4個/頁：1條水平線 + 1條垂直線 */
+        .layout-4::before {
+            top: 50%;
+            left: 0;
+            right: 0;
+            border-top-width: 2px;
+        }
+
+        .layout-4::after {
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            border-left-width: 2px;
+        }
+
+        /* 6個/頁：2條水平線 + 1條垂直線 */
+        .layout-6::before {
+            top: 33.33%;
+            left: 0;
+            right: 0;
+            border-top-width: 2px;
+            box-shadow: 0 33.33vh 0 0 #999;
+        }
+
+        .layout-6::after {
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            border-left-width: 2px;
+        }
+
+        /* 8個/頁：3條水平線 + 1條垂直線 */
+        .layout-8::before {
+            top: 25%;
+            left: 0;
+            right: 0;
+            border-top-width: 2px;
+            box-shadow: 0 25vh 0 0 #999, 0 50vh 0 0 #999;
+        }
+
+        .layout-8::after {
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            border-left-width: 2px;
+        }
+
+        /* 10個/頁：4條水平線 + 1條垂直線 */
+        .layout-10::before {
+            top: 20%;
+            left: 0;
+            right: 0;
+            border-top-width: 2px;
+            box-shadow: 0 20vh 0 0 #999, 0 40vh 0 0 #999, 0 60vh 0 0 #999;
+        }
+
+        .layout-10::after {
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            border-left-width: 2px;
+        }
+
+        .bingo-grid {
+            display: grid;
+            gap: 1px;
+            background: #000;
+            width: 100%;
+            height: 100%;
+        }
+
+        .grid-3x3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4x4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .grid-5x5 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .bingo-cell {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            padding: 5px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* 根據佈局調整字體大小 */
+        .layout-1 .bingo-cell {
+            font-size: clamp(18px, 3vw, 36px);
+        }
+
+        .layout-2 .bingo-cell {
+            font-size: clamp(14px, 2.2vw, 28px);
+        }
+
+        .layout-4 .bingo-cell {
+            font-size: clamp(12px, 1.8vw, 22px);
+        }
+
+        .layout-6 .bingo-cell {
+            font-size: clamp(10px, 1.4vw, 18px);
+        }
+
+        .layout-8 .bingo-cell {
+            font-size: clamp(8px, 1.2vw, 14px);
+        }
+
+        .layout-10 .bingo-cell {
+            font-size: clamp(6px, 1vw, 12px);
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        /* 列印樣式 */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+
+            .control-panel,
+            .preview-controls {
+                display: none !important;
+            }
+
+            .preview-section {
+                display: block !important;
+                box-shadow: none;
+                border-radius: 0;
+                margin: 0;
+                padding: 0;
+                height: 100vh;
+            }
+
+            .page-layout {
+                margin: 0;
+                padding: 5px;
+                height: calc(100vh - 10px);
+                gap: 5px;
+            }
+
+            .bingo-card {
+                border-radius: 0;
+                page-break-inside: avoid;
+            }
+
+            /* 列印時的尺寸調整 - 最大化A4利用 */
+            .layout-1 .bingo-card {
+                width: min(90vh, 70vw);
+                height: min(90vh, 70vw);
+            }
+
+            .layout-2 .bingo-card {
+                width: min(40vh, 45vw);
+                height: min(40vh, 45vw);
+            }
+
+            .layout-4 .bingo-card {
+                width: min(35vh, 42vw);
+                height: min(35vh, 42vw);
+            }
+
+            .layout-6 .bingo-card {
+                width: min(30vh, 28vw);
+                height: min(30vh, 28vw);
+            }
+
+            .layout-8 .bingo-card {
+                width: min(25vh, 20vw);
+                height: min(25vh, 20vw);
+            }
+
+            .layout-10 .bingo-card {
+                width: min(20vh, 18vw);
+                height: min(20vh, 18vw);
+            }
+
+            /* 列印時虛線變成實線 */
+            .layout-2::after,
+            .layout-4::after,
+            .layout-4::before,
+            .layout-6::after,
+            .layout-6::before,
+            .layout-8::after,
+            .layout-8::before,
+            .layout-10::after,
+            .layout-10::before {
+                border-style: solid;
+                border-color: #666;
+            }
+
+            .layout-1 .bingo-cell {
+                font-size: clamp(28px, 4.5vw, 52px);
+            }
+
+            .layout-2 .bingo-cell {
+                font-size: clamp(18px, 2.5vw, 32px);
+            }
+
+            .layout-4 .bingo-cell {
+                font-size: clamp(14px, 2vw, 26px);
+            }
+
+            .layout-6 .bingo-cell {
+                font-size: clamp(10px, 1.5vw, 20px);
+            }
+
+            .layout-8 .bingo-cell {
+                font-size: clamp(8px, 1.2vw, 16px);
+            }
+
+            .layout-10 .bingo-cell {
+                font-size: clamp(6px, 1vw, 14px);
+            }
+        }
+
+        @page {
+            margin: 0.5cm;
+            size: A4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 控制面板 -->
+        <div class="control-panel">
+            <h1 style="text-align: center; margin-bottom: 30px; color: #333;">Bingo遊戲製作器</h1>
+            
+            <!-- 選擇大小 -->
+            <div class="control-section">
+                <h3>1. 選擇Bingo大小</h3>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="size-3x3" name="gridSize" value="3" checked>
+                        <label for="size-3x3">3×3 (9格)</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="size-4x4" name="gridSize" value="4">
+                        <label for="size-4x4">4×4 (16格)</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="size-5x5" name="gridSize" value="5">
+                        <label for="size-5x5">5×5 (25格)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 輸入內容 -->
+            <div class="control-section">
+                <h3>2. 輸入Bingo內容</h3>
+                
+                <!-- 模式選擇 -->
+                <div class="mode-selector">
+                    <div class="radio-group" style="margin-bottom: 20px;">
+                        <div class="radio-option">
+                            <input type="radio" id="mode-custom" name="inputMode" value="custom" checked>
+                            <label for="mode-custom">自定義輸入</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="mode-phonetic" name="inputMode" value="phonetic">
+                            <label for="mode-phonetic">注音符號選擇</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 自定義輸入區域 -->
+                <div id="customInputArea" class="input-mode-area">
+                    <textarea id="contentInput" class="input-area" placeholder="請輸入要放入Bingo格子的內容，每行一個項目：
+
+蘋果
+香蕉
+橘子
+葡萄
+西瓜
+
+或者可以輸入數字、詞彙、短句等任何內容..."></textarea>
+                    <div class="help-text">每行輸入一個項目，程式會自動隨機填入格子中。如果內容不足會重複使用，如果內容過多會隨機選取。</div>
+                </div>
+
+                <!-- 注音符號選擇區域 -->
+                <div id="phoneticInputArea" class="input-mode-area" style="display: none;">
+                    <div class="phonetic-selector-container">
+                        <div class="phonetic-grid">
+                            <div class="phonetic-category">
+                                <div class="category-title">聲母</div>
+                                <div class="phonetic-buttons">
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄅ">ㄅ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄆ">ㄆ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄇ">ㄇ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄈ">ㄈ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄉ">ㄉ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄊ">ㄊ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄋ">ㄋ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄌ">ㄌ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄍ">ㄍ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄎ">ㄎ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄏ">ㄏ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄐ">ㄐ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄑ">ㄑ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄒ">ㄒ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄓ">ㄓ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄔ">ㄔ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄕ">ㄕ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄖ">ㄖ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄗ">ㄗ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄘ">ㄘ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄙ">ㄙ</button>
+                                </div>
+                            </div>
+                            
+                            <div class="phonetic-category">
+                                <div class="category-title">韻母</div>
+                                <div class="phonetic-buttons">
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄚ">ㄚ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄛ">ㄛ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄜ">ㄜ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄝ">ㄝ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄞ">ㄞ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄟ">ㄟ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄠ">ㄠ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄡ">ㄡ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄢ">ㄢ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄣ">ㄣ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄤ">ㄤ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄥ">ㄥ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄦ">ㄦ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄧ">ㄧ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄨ">ㄨ</button>
+                                    <button type="button" class="phonetic-btn" data-symbol="ㄩ">ㄩ</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="selection-counter">
+                            <div class="counter-display">
+                                <span class="counter-text">已選擇：</span>
+                                <span id="selectedCount">0</span>
+                                <span class="counter-text"> / </span>
+                                <span id="requiredCount">9</span>
+                                <span class="counter-text"> 個</span>
+                            </div>
+                            <button type="button" id="clearSelection" class="clear-btn">清除全部</button>
+                        </div>
+                    </div>
+                    <div class="help-text">點選注音符號來建立Bingo內容。選擇數量會自動依據格子大小調整。</div>
+                </div>
+            </div>
+
+            <!-- 選擇佈局 -->
+            <div class="control-section">
+                <h3>3. 選擇每頁顯示數量</h3>
+                <div class="help-text" style="margin-bottom: 15px;">註：6個/頁、8個/頁和10個/頁選項僅適用於3×3格式</div>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="layout-1" name="pageLayout" value="1" checked>
+                        <label for="layout-1">1個/頁 (大尺寸)</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="layout-2" name="pageLayout" value="2">
+                        <label for="layout-2">2個/頁 (中尺寸)</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="layout-4" name="pageLayout" value="4">
+                        <label for="layout-4">4個/頁 (小尺寸)</label>
+                    </div>
+                    <div class="radio-option" id="layout-6-option">
+                        <input type="radio" id="layout-6" name="pageLayout" value="6">
+                        <label for="layout-6">6個/頁 (迷你)</label>
+                    </div>
+                    <div class="radio-option" id="layout-8-option">
+                        <input type="radio" id="layout-8" name="pageLayout" value="8">
+                        <label for="layout-8">8個/頁 (超迷你)</label>
+                    </div>
+                    <div class="radio-option" id="layout-10-option">
+                        <input type="radio" id="layout-10" name="pageLayout" value="10">
+                        <label for="layout-10">10個/頁 (極迷你)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 生成按鈕 -->
+            <button class="generate-btn" onclick="generateBingo()">生成Bingo卡片</button>
+        </div>
+
+        <!-- 預覽區域 -->
+        <div id="previewSection" class="preview-section">
+            <div class="preview-controls">
+                <h2>預覽結果</h2>
+                <div class="layout-selector">
+                    <button class="print-btn" onclick="window.print()">列印卡片</button>
+                    <button class="generate-btn" onclick="generateBingo()" style="width: auto; padding: 8px 16px; font-size: 14px;">重新生成</button>
+                </div>
+            </div>
+            <div id="warningArea"></div>
+            <div id="bingoOutput" class="page-layout"></div>
+        </div>
+    </div>
+
+    <script>
+        function generateBingo() {
+            // 獲取設定
+            const gridSize = parseInt(document.querySelector('input[name="gridSize"]:checked').value);
+            const pageLayout = parseInt(document.querySelector('input[name="pageLayout"]:checked').value);
+            const inputMode = document.querySelector('input[name="inputMode"]:checked').value;
+            
+            let items = [];
+            
+            // 根據輸入模式獲取內容
+            if (inputMode === 'custom') {
+                const contentInput = document.getElementById('contentInput').value.trim();
+                if (!contentInput) {
+                    alert('請輸入Bingo內容！');
+                    return;
+                }
+                items = contentInput.split('\n')
+                    .map(item => item.trim())
+                    .filter(item => item.length > 0);
+            } else {
+                // 注音符號模式
+                const selectedButtons = document.querySelectorAll('.phonetic-btn.selected');
+                items = Array.from(selectedButtons).map(btn => btn.dataset.symbol);
+                
+                if (items.length === 0) {
+                    alert('請選擇至少一個注音符號！');
+                    return;
+                }
+            }
+            
+            if (items.length === 0) {
+                alert('請輸入有效的Bingo內容！');
+                return;
+            }
+
+            // 計算需要的格子數量
+            const cellsNeeded = gridSize * gridSize;
+            const cardsToGenerate = pageLayout;
+            
+            // 顯示警告（如果需要）
+            const warningArea = document.getElementById('warningArea');
+            warningArea.innerHTML = '';
+            
+            if (items.length < cellsNeeded) {
+                warningArea.innerHTML = `
+                    <div class="warning">
+                        <strong>注意：</strong> 您選擇了 ${items.length} 個項目，但 ${gridSize}×${gridSize} 需要 ${cellsNeeded} 個項目。
+                        系統會重複使用現有項目來填滿格子。
+                    </div>
+                `;
+            }
+
+            // 生成卡片
+            generateCards(items, gridSize, pageLayout, cellsNeeded);
+            
+            // 顯示預覽區域
+            document.getElementById('previewSection').classList.add('show');
+            
+            // 滾動到預覽區域
+            document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateCards(items, gridSize, pageLayout, cellsNeeded) {
+            const output = document.getElementById('bingoOutput');
+            output.innerHTML = '';
+            output.className = `page-layout layout-${pageLayout}`;
+
+            for (let cardIndex = 0; cardIndex < pageLayout; cardIndex++) {
+                // 為每張卡片隨機選擇和排列項目
+                const cardItems = selectAndShuffleItems(items, cellsNeeded);
+                
+                // 創建卡片
+                const card = createBingoCard(cardItems, gridSize, cardIndex + 1);
+                output.appendChild(card);
+            }
+        }
+
+        function selectAndShuffleItems(items, needed) {
+            let result = [];
+            
+            // 如果項目不足，重複使用
+            while (result.length < needed) {
+                const remaining = needed - result.length;
+                if (remaining >= items.length) {
+                    result = result.concat([...items]);
+                } else {
+                    result = result.concat(items.slice(0, remaining));
+                }
+            }
+            
+            // 如果項目過多，隨機選取
+            if (result.length > needed) {
+                const shuffled = [...items].sort(() => Math.random() - 0.5);
+                result = shuffled.slice(0, needed);
+            }
+            
+            // 隨機排列
+            return result.sort(() => Math.random() - 0.5);
+        }
+
+        function createBingoCard(items, gridSize, cardNumber) {
+            const card = document.createElement('div');
+            card.className = 'bingo-card';
+            
+            // 直接創建網格，不要標題
+            const grid = document.createElement('div');
+            grid.className = `bingo-grid grid-${gridSize}x${gridSize}`;
+            
+            // 創建格子
+            items.forEach(item => {
+                const cell = document.createElement('div');
+                cell.className = 'bingo-cell';
+                cell.textContent = item;
+                grid.appendChild(cell);
+            });
+            
+            card.appendChild(grid);
+            return card;
+        }
+
+        // 初始化示例內容
+        document.addEventListener('DOMContentLoaded', function() {
+            const defaultContent = `蘋果
+香蕉
+橘子
+葡萄
+西瓜
+芒果
+鳳梨
+草莓
+櫻桃`;
+            document.getElementById('contentInput').value = defaultContent;
+            
+            // 添加網格大小變化監聽器
+            const gridSizeRadios = document.querySelectorAll('input[name="gridSize"]');
+            gridSizeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateLayoutOptions();
+                    updateRequiredCount();
+                });
+            });
+            
+            // 初始化顯示選項
+            updateLayoutOptions();
+            
+            // 初始化注音符號選擇器
+            initPhoneticSelector();
+            
+            // 初始化輸入模式切換
+            initInputModeToggle();
+            
+            // 初始化計數器
+            updateRequiredCount();
+        });
+
+        function initInputModeToggle() {
+            const modeRadios = document.querySelectorAll('input[name="inputMode"]');
+            const customArea = document.getElementById('customInputArea');
+            const phoneticArea = document.getElementById('phoneticInputArea');
+            
+            modeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'custom') {
+                        customArea.style.display = 'block';
+                        phoneticArea.style.display = 'none';
+                    } else {
+                        customArea.style.display = 'none';
+                        phoneticArea.style.display = 'block';
+                    }
+                });
+            });
+        }
+
+        function initPhoneticSelector() {
+            const phoneticButtons = document.querySelectorAll('.phonetic-btn');
+            const clearButton = document.getElementById('clearSelection');
+            
+            // 為每個注音符號按鈕添加點擊事件
+            phoneticButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                    updateSelectedCount();
+                });
+            });
+            
+            // 清除全部按鈕
+            clearButton.addEventListener('click', function() {
+                phoneticButtons.forEach(button => {
+                    button.classList.remove('selected');
+                });
+                updateSelectedCount();
+            });
+        }
+
+        function updateSelectedCount() {
+            const selectedButtons = document.querySelectorAll('.phonetic-btn.selected');
+            const selectedCount = selectedButtons.length;
+            const requiredCount = parseInt(document.getElementById('requiredCount').textContent);
+            const selectedCountElement = document.getElementById('selectedCount');
+            
+            selectedCountElement.textContent = selectedCount;
+            
+            // 如果選擇數量超過需要數量，改變顏色提示
+            if (selectedCount > requiredCount) {
+                selectedCountElement.classList.add('over-limit');
+            } else {
+                selectedCountElement.classList.remove('over-limit');
+            }
+        }
+
+        function updateRequiredCount() {
+            const gridSize = parseInt(document.querySelector('input[name="gridSize"]:checked').value);
+            const requiredCount = gridSize * gridSize;
+            document.getElementById('requiredCount').textContent = requiredCount;
+        }
+
+        function updateLayoutOptions() {
+            const selectedSize = document.querySelector('input[name="gridSize"]:checked').value;
+            const layout6Option = document.getElementById('layout-6-option');
+            const layout8Option = document.getElementById('layout-8-option');
+            const layout10Option = document.getElementById('layout-10-option');
+            const layout6Radio = document.getElementById('layout-6');
+            const layout8Radio = document.getElementById('layout-8');
+            const layout10Radio = document.getElementById('layout-10');
+            
+            if (selectedSize === '3') {
+                // 3x3時顯示所有選項
+                layout6Option.classList.remove('layout-option-hidden');
+                layout8Option.classList.remove('layout-option-hidden');
+                layout10Option.classList.remove('layout-option-hidden');
+            } else {
+                // 4x4和5x5時隱藏6個/頁、8個/頁和10個/頁選項
+                layout6Option.classList.add('layout-option-hidden');
+                layout8Option.classList.add('layout-option-hidden');
+                layout10Option.classList.add('layout-option-hidden');
+                
+                // 如果當前選中的是6個/頁、8個/頁或10個/頁，自動切換到4個/頁
+                if (layout6Radio.checked || layout8Radio.checked || layout10Radio.checked) {
+                    document.getElementById('layout-4').checked = true;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
