@@ -64,10 +64,6 @@
             margin: 0;
         }
 
-        .layout-option-hidden {
-            display: none;
-        }
-
         /* 注音符號選擇器樣式 */
         .phonetic-selector-container {
             display: flex;
@@ -211,6 +207,58 @@
             transition: opacity 0.3s ease;
         }
 
+        /* 數量選擇器樣式 */
+        .quantity-selector {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .quantity-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-input-group label {
+            font-weight: bold;
+            color: #333;
+            min-width: 120px;
+        }
+
+        .quantity-input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .quantity-input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .quantity-unit {
+            color: #666;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .quantity-input-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .quantity-input-group label {
+                min-width: auto;
+            }
+        }
+
         .input-area {
             width: 100%;
             min-height: 120px;
@@ -289,10 +337,19 @@
             background: #0056b3;
         }
 
-        .layout-selector {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        /* 多頁容器樣式 */
+        .pages-container {
+            display: block;
+        }
+
+        .pages-container .page-layout {
+            margin-bottom: 80px;
+            page-break-after: always;
+        }
+
+        .pages-container .page-layout:last-child {
+            margin-bottom: 0;
+            page-break-after: auto;
         }
 
         .page-layout {
@@ -305,7 +362,7 @@
             position: relative;
         }
 
-        /* 重新設計的佈局系統 - 縱向優先 */
+        /* 佈局系統 */
         .layout-1 {
             grid-template-columns: 1fr;
             grid-template-rows: 1fr;
@@ -349,15 +406,13 @@
 
         .bingo-card {
             background: white;
-            border: 3px solid #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 2px solid #000;
             position: relative;
             aspect-ratio: 1;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
         }
 
-        /* 根據佈局設定具體尺寸以最大化A4空間利用 */
+        /* 卡片尺寸 */
         .layout-1 .bingo-card {
             width: min(80vh, 80vw);
             height: min(80vh, 80vw);
@@ -388,153 +443,247 @@
             height: min(16vh, 20vw);
         }
 
-        /* 完整的虛線切割線系統 */
-        .page-layout::before,
-        .page-layout::after {
+        /* 虛線切割線系統 */
+        .layout-2::after {
             content: '';
             position: absolute;
+            top: 50%;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
             z-index: 10;
-            border-color: #999;
-            border-style: dashed;
-            border-width: 0;
         }
 
-        /* 2個/頁：1條水平線 */
-        .layout-2::after {
-            top: 50%;
-            left: 0;
-            right: 0;
-            border-top-width: 2px;
-        }
-
-        /* 4個/頁：1條水平線 + 1條垂直線 */
         .layout-4::before {
+            content: '';
+            position: absolute;
             top: 50%;
-            left: 0;
-            right: 0;
-            border-top-width: 2px;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
+            z-index: 10;
         }
 
         .layout-4::after {
+            content: '';
+            position: absolute;
             left: 50%;
-            top: 0;
-            bottom: 0;
-            border-left-width: 2px;
+            top: 10px;
+            bottom: 10px;
+            width: 0;
+            border-left: 3px dashed #666;
+            z-index: 10;
         }
 
-        /* 6個/頁：2條水平線 + 1條垂直線 */
         .layout-6::before {
+            content: '';
+            position: absolute;
             top: 33.33%;
-            left: 0;
-            right: 0;
-            border-top-width: 2px;
-            box-shadow: 0 33.33vh 0 0 #999;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
+            z-index: 10;
         }
 
         .layout-6::after {
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            border-left-width: 2px;
+            content: '';
+            position: absolute;
+            top: 66.66%;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
+            z-index: 10;
         }
 
-        /* 8個/頁：3條水平線 + 1條垂直線 */
+        .layout-6 .vertical-line {
+            position: absolute;
+            left: 50%;
+            top: 10px;
+            bottom: 10px;
+            width: 0;
+            border-left: 3px dashed #666;
+            z-index: 10;
+        }
+
         .layout-8::before {
+            content: '';
+            position: absolute;
             top: 25%;
-            left: 0;
-            right: 0;
-            border-top-width: 2px;
-            box-shadow: 0 25vh 0 0 #999, 0 50vh 0 0 #999;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
+            z-index: 10;
         }
 
         .layout-8::after {
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            border-left-width: 2px;
+            content: '';
+            position: absolute;
+            top: 75%;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
+            z-index: 10;
         }
 
-        /* 10個/頁：4條水平線 + 1條垂直線 */
+        .layout-8 .horizontal-line-middle {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
+            z-index: 10;
+        }
+
+        .layout-8 .vertical-line {
+            position: absolute;
+            left: 50%;
+            top: 10px;
+            bottom: 10px;
+            width: 0;
+            border-left: 3px dashed #666;
+            z-index: 10;
+        }
+
         .layout-10::before {
+            content: '';
+            position: absolute;
             top: 20%;
-            left: 0;
-            right: 0;
-            border-top-width: 2px;
-            box-shadow: 0 20vh 0 0 #999, 0 40vh 0 0 #999, 0 60vh 0 0 #999;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
+            z-index: 10;
         }
 
         .layout-10::after {
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            border-left-width: 2px;
+            content: '';
+            position: absolute;
+            top: 80%;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
+            z-index: 10;
         }
 
-        .bingo-grid {
-            display: grid;
-            gap: 1px;
-            background: #000;
+        .layout-10 .horizontal-line-40 {
+            position: absolute;
+            top: 40%;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
+            z-index: 10;
+        }
+
+        .layout-10 .horizontal-line-60 {
+            position: absolute;
+            top: 60%;
+            left: 10px;
+            right: 10px;
+            height: 0;
+            border-top: 3px dashed #666;
+            z-index: 10;
+        }
+
+        .layout-10 .vertical-line {
+            position: absolute;
+            left: 50%;
+            top: 10px;
+            bottom: 10px;
+            width: 0;
+            border-left: 3px dashed #666;
+            z-index: 10;
+        }
+
+        /* Bingo表格樣式 */
+        .bingo-table {
             width: 100%;
             height: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
         }
 
-        .grid-3x3 {
-            grid-template-columns: repeat(3, 1fr);
+        .bingo-row {
+            height: 20%;
         }
 
-        .grid-4x4 {
-            grid-template-columns: repeat(4, 1fr);
+        /* 針對不同格子大小調整行高 */
+        .grid-3x3 .bingo-row {
+            height: 33.33%;
         }
 
-        .grid-5x5 {
-            grid-template-columns: repeat(5, 1fr);
+        .grid-3x3 .bingo-cell {
+            width: 33.33%;
+        }
+
+        .grid-4x4 .bingo-row {
+            height: 25%;
+        }
+
+        .grid-4x4 .bingo-cell {
+            width: 25%;
+        }
+
+        .grid-5x5 .bingo-row {
+            height: 20%;
+        }
+
+        .grid-5x5 .bingo-cell {
+            width: 20%;
         }
 
         .bingo-cell {
             background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 3.5px solid #000;
             font-weight: bold;
             color: #333;
-            text-align: center;
-            padding: 5px;
+            padding: 0;
             word-wrap: break-word;
             overflow-wrap: break-word;
+            text-align: center;
+            vertical-align: middle;
+            position: relative;
         }
 
-        /* 根據佈局調整字體大小 */
+        .bingo-cell-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+        }
+
+        /* 字體大小調整 */
         .layout-1 .bingo-cell {
-            font-size: clamp(18px, 3vw, 36px);
+            font-size: clamp(24px, 4vw, 44px);
         }
 
         .layout-2 .bingo-cell {
-            font-size: clamp(14px, 2.2vw, 28px);
+            font-size: clamp(20px, 3vw, 36px);
         }
 
         .layout-4 .bingo-cell {
-            font-size: clamp(12px, 1.8vw, 22px);
+            font-size: clamp(16px, 2.5vw, 30px);
         }
 
         .layout-6 .bingo-cell {
-            font-size: clamp(10px, 1.4vw, 18px);
+            font-size: clamp(14px, 2vw, 26px);
         }
 
         .layout-8 .bingo-cell {
-            font-size: clamp(8px, 1.2vw, 14px);
+            font-size: clamp(12px, 1.8vw, 22px);
         }
 
         .layout-10 .bingo-cell {
-            font-size: clamp(6px, 1vw, 12px);
-        }
-
-        .warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+            font-size: clamp(10px, 1.5vw, 18px);
         }
 
         /* 列印樣式 */
@@ -571,7 +720,6 @@
                 page-break-inside: avoid;
             }
 
-            /* 列印時的尺寸調整 - 最大化A4利用 */
             .layout-1 .bingo-card {
                 width: min(90vh, 70vw);
                 height: min(90vh, 70vw);
@@ -604,40 +752,46 @@
 
             /* 列印時虛線變成實線 */
             .layout-2::after,
-            .layout-4::after,
             .layout-4::before,
-            .layout-6::after,
+            .layout-4::after,
             .layout-6::before,
-            .layout-8::after,
+            .layout-6::after,
+            .layout-6 .vertical-line,
             .layout-8::before,
+            .layout-8::after,
+            .layout-8 .horizontal-line-middle,
+            .layout-8 .vertical-line,
+            .layout-10::before,
             .layout-10::after,
-            .layout-10::before {
-                border-style: solid;
-                border-color: #666;
+            .layout-10 .horizontal-line-40,
+            .layout-10 .horizontal-line-60,
+            .layout-10 .vertical-line {
+                border-style: solid !important;
+                border-color: #333 !important;
             }
 
             .layout-1 .bingo-cell {
-                font-size: clamp(28px, 4.5vw, 52px);
+                font-size: clamp(32px, 5vw, 60px);
             }
 
             .layout-2 .bingo-cell {
-                font-size: clamp(18px, 2.5vw, 32px);
+                font-size: clamp(24px, 3.5vw, 44px);
             }
 
             .layout-4 .bingo-cell {
-                font-size: clamp(14px, 2vw, 26px);
+                font-size: clamp(18px, 3vw, 36px);
             }
 
             .layout-6 .bingo-cell {
-                font-size: clamp(10px, 1.5vw, 20px);
+                font-size: clamp(16px, 2.5vw, 30px);
             }
 
             .layout-8 .bingo-cell {
-                font-size: clamp(8px, 1.2vw, 16px);
+                font-size: clamp(14px, 2vw, 26px);
             }
 
             .layout-10 .bingo-cell {
-                font-size: clamp(6px, 1vw, 14px);
+                font-size: clamp(12px, 1.8vw, 22px);
             }
         }
 
@@ -776,7 +930,6 @@
             <!-- 選擇佈局 -->
             <div class="control-section">
                 <h3>3. 選擇每頁顯示數量</h3>
-                <div class="help-text" style="margin-bottom: 15px;">註：6個/頁、8個/頁和10個/頁選項僅適用於3×3格式</div>
                 <div class="radio-group">
                     <div class="radio-option">
                         <input type="radio" id="layout-1" name="pageLayout" value="1" checked>
@@ -790,19 +943,32 @@
                         <input type="radio" id="layout-4" name="pageLayout" value="4">
                         <label for="layout-4">4個/頁 (小尺寸)</label>
                     </div>
-                    <div class="radio-option" id="layout-6-option">
+                    <div class="radio-option">
                         <input type="radio" id="layout-6" name="pageLayout" value="6">
                         <label for="layout-6">6個/頁 (迷你)</label>
                     </div>
-                    <div class="radio-option" id="layout-8-option">
+                    <div class="radio-option">
                         <input type="radio" id="layout-8" name="pageLayout" value="8">
                         <label for="layout-8">8個/頁 (超迷你)</label>
                     </div>
-                    <div class="radio-option" id="layout-10-option">
+                    <div class="radio-option">
                         <input type="radio" id="layout-10" name="pageLayout" value="10">
                         <label for="layout-10">10個/頁 (極迷你)</label>
                     </div>
                 </div>
+            </div>
+
+            <!-- 選擇輸出數量 -->
+            <div class="control-section">
+                <h3>4. 選擇輸出總數量</h3>
+                <div class="quantity-selector">
+                    <div class="quantity-input-group">
+                        <label for="outputQuantity">想要的卡片總數：</label>
+                        <input type="number" id="outputQuantity" min="1" max="30" value="1" class="quantity-input">
+                        <span class="quantity-unit">個</span>
+                    </div>
+                </div>
+                <div class="help-text">系統會根據選擇的版面自動調整到完整頁數。</div>
             </div>
 
             <!-- 生成按鈕 -->
@@ -818,21 +984,35 @@
                     <button class="generate-btn" onclick="generateBingo()" style="width: auto; padding: 8px 16px; font-size: 14px;">重新生成</button>
                 </div>
             </div>
-            <div id="warningArea"></div>
             <div id="bingoOutput" class="page-layout"></div>
         </div>
     </div>
 
     <script>
         function generateBingo() {
-            // 獲取設定
             const gridSize = parseInt(document.querySelector('input[name="gridSize"]:checked').value);
             const pageLayout = parseInt(document.querySelector('input[name="pageLayout"]:checked').value);
             const inputMode = document.querySelector('input[name="inputMode"]:checked').value;
+            const desiredQuantity = parseInt(document.getElementById('outputQuantity').value) || 1;
+            
+            console.log('生成參數:', {
+                gridSize,
+                pageLayout,
+                inputMode,
+                desiredQuantity
+            });
+            
+            const requiredPages = Math.ceil(desiredQuantity / pageLayout);
+            const actualQuantity = requiredPages * pageLayout;
+            
+            console.log('計算結果:', {
+                desiredQuantity,
+                requiredPages,
+                actualQuantity
+            });
             
             let items = [];
             
-            // 根據輸入模式獲取內容
             if (inputMode === 'custom') {
                 const contentInput = document.getElementById('contentInput').value.trim();
                 if (!contentInput) {
@@ -843,7 +1023,6 @@
                     .map(item => item.trim())
                     .filter(item => item.length > 0);
             } else {
-                // 注音符號模式
                 const selectedButtons = document.querySelectorAll('.phonetic-btn.selected');
                 items = Array.from(selectedButtons).map(btn => btn.dataset.symbol);
                 
@@ -858,92 +1037,144 @@
                 return;
             }
 
-            // 計算需要的格子數量
             const cellsNeeded = gridSize * gridSize;
-            const cardsToGenerate = pageLayout;
+            generateMultiplePages(items, gridSize, pageLayout, cellsNeeded, actualQuantity);
             
-            // 顯示警告（如果需要）
-            const warningArea = document.getElementById('warningArea');
-            warningArea.innerHTML = '';
-            
-            if (items.length < cellsNeeded) {
-                warningArea.innerHTML = `
-                    <div class="warning">
-                        <strong>注意：</strong> 您選擇了 ${items.length} 個項目，但 ${gridSize}×${gridSize} 需要 ${cellsNeeded} 個項目。
-                        系統會重複使用現有項目來填滿格子。
-                    </div>
-                `;
-            }
-
-            // 生成卡片
-            generateCards(items, gridSize, pageLayout, cellsNeeded);
-            
-            // 顯示預覽區域
             document.getElementById('previewSection').classList.add('show');
-            
-            // 滾動到預覽區域
             document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function generateCards(items, gridSize, pageLayout, cellsNeeded) {
+        function generateMultiplePages(items, gridSize, pageLayout, cellsNeeded, totalCards) {
             const output = document.getElementById('bingoOutput');
             output.innerHTML = '';
-            output.className = `page-layout layout-${pageLayout}`;
-
-            for (let cardIndex = 0; cardIndex < pageLayout; cardIndex++) {
-                // 為每張卡片隨機選擇和排列項目
-                const cardItems = selectAndShuffleItems(items, cellsNeeded);
+            output.className = 'pages-container';
+            
+            const totalPages = Math.ceil(totalCards / pageLayout);
+            
+            for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+                const pageContainer = document.createElement('div');
+                pageContainer.className = `page-layout layout-${pageLayout}`;
                 
-                // 創建卡片
-                const card = createBingoCard(cardItems, gridSize, cardIndex + 1);
-                output.appendChild(card);
+                const remainingCards = totalCards - (pageIndex * pageLayout);
+                const cardsInThisPage = Math.min(pageLayout, remainingCards);
+                
+                for (let cardIndex = 0; cardIndex < cardsInThisPage; cardIndex++) {
+                    const cardNumber = (pageIndex * pageLayout) + cardIndex + 1;
+                    const cardItems = selectAndShuffleItems(items, cellsNeeded);
+                    const card = createBingoCard(cardItems, gridSize, cardNumber);
+                    pageContainer.appendChild(card);
+                }
+                
+                addDashedLines(pageContainer, pageLayout);
+                output.appendChild(pageContainer);
+            }
+        }
+
+        function addDashedLines(pageContainer, pageLayout) {
+            if (pageLayout === 6) {
+                const verticalLine = document.createElement('div');
+                verticalLine.className = 'vertical-line';
+                pageContainer.appendChild(verticalLine);
+            }
+            
+            if (pageLayout === 8) {
+                const middleLine = document.createElement('div');
+                middleLine.className = 'horizontal-line-middle';
+                pageContainer.appendChild(middleLine);
+                
+                const verticalLine = document.createElement('div');
+                verticalLine.className = 'vertical-line';
+                pageContainer.appendChild(verticalLine);
+            }
+            
+            if (pageLayout === 10) {
+                const line40 = document.createElement('div');
+                line40.className = 'horizontal-line-40';
+                pageContainer.appendChild(line40);
+                
+                const line60 = document.createElement('div');
+                line60.className = 'horizontal-line-60';
+                pageContainer.appendChild(line60);
+                
+                const verticalLine = document.createElement('div');
+                verticalLine.className = 'vertical-line';
+                pageContainer.appendChild(verticalLine);
             }
         }
 
         function selectAndShuffleItems(items, needed) {
             let result = [];
             
-            // 如果項目不足，重複使用
-            while (result.length < needed) {
-                const remaining = needed - result.length;
-                if (remaining >= items.length) {
-                    result = result.concat([...items]);
-                } else {
-                    result = result.concat(items.slice(0, remaining));
-                }
+            if (items.length === 0) {
+                console.error('selectAndShuffleItems: 沒有可用項目');
+                return Array(needed).fill('?');
             }
             
-            // 如果項目過多，隨機選取
-            if (result.length > needed) {
+            if (items.length >= needed) {
                 const shuffled = [...items].sort(() => Math.random() - 0.5);
                 result = shuffled.slice(0, needed);
+            } else {
+                const shuffled = [...items].sort(() => Math.random() - 0.5);
+                
+                while (result.length < needed) {
+                    for (let item of shuffled) {
+                        if (result.length < needed) {
+                            result.push(item);
+                        }
+                    }
+                }
+                
+                result = result.sort(() => Math.random() - 0.5);
             }
             
-            // 隨機排列
-            return result.sort(() => Math.random() - 0.5);
+            return result;
         }
 
         function createBingoCard(items, gridSize, cardNumber) {
             const card = document.createElement('div');
             card.className = 'bingo-card';
             
-            // 直接創建網格，不要標題
-            const grid = document.createElement('div');
-            grid.className = `bingo-grid grid-${gridSize}x${gridSize}`;
+            const totalCells = gridSize * gridSize;
             
-            // 創建格子
-            items.forEach(item => {
-                const cell = document.createElement('div');
-                cell.className = 'bingo-cell';
-                cell.textContent = item;
-                grid.appendChild(cell);
-            });
+            if (items.length !== totalCells) {
+                console.error(`卡片 ${cardNumber}: 需要 ${totalCells} 個項目，但收到 ${items.length} 個`);
+                items = selectAndShuffleItems(items, totalCells);
+            }
             
-            card.appendChild(grid);
+            const table = document.createElement('table');
+            table.className = `bingo-table grid-${gridSize}x${gridSize}`;
+            
+            let itemIndex = 0;
+            for (let row = 0; row < gridSize; row++) {
+                const tr = document.createElement('tr');
+                tr.className = 'bingo-row';
+                
+                for (let col = 0; col < gridSize; col++) {
+                    const td = document.createElement('td');
+                    td.className = 'bingo-cell';
+                    
+                    const content = document.createElement('div');
+                    content.className = 'bingo-cell-content';
+                    
+                    if (itemIndex < items.length && items[itemIndex] !== undefined) {
+                        content.textContent = items[itemIndex];
+                    } else {
+                        content.textContent = '?';
+                        console.warn(`卡片 ${cardNumber}: 格子 ${itemIndex} 缺少內容`);
+                    }
+                    
+                    td.appendChild(content);
+                    tr.appendChild(td);
+                    itemIndex++;
+                }
+                
+                table.appendChild(tr);
+            }
+            
+            card.appendChild(table);
             return card;
         }
 
-        // 初始化示例內容
         document.addEventListener('DOMContentLoaded', function() {
             const defaultContent = `蘋果
 香蕉
@@ -956,27 +1187,49 @@
 櫻桃`;
             document.getElementById('contentInput').value = defaultContent;
             
-            // 添加網格大小變化監聽器
             const gridSizeRadios = document.querySelectorAll('input[name="gridSize"]');
             gridSizeRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    updateLayoutOptions();
                     updateRequiredCount();
                 });
             });
             
-            // 初始化顯示選項
-            updateLayoutOptions();
-            
-            // 初始化注音符號選擇器
             initPhoneticSelector();
-            
-            // 初始化輸入模式切換
             initInputModeToggle();
-            
-            // 初始化計數器
             updateRequiredCount();
+            initQuantitySelector();
         });
+
+        function initQuantitySelector() {
+            const quantityInput = document.getElementById('outputQuantity');
+            
+            quantityInput.addEventListener('input', function() {
+                let value = parseInt(this.value) || 1;
+                if (value > 30) {
+                    value = 30;
+                    this.value = 30;
+                }
+                if (value < 1) {
+                    value = 1;
+                    this.value = 1;
+                }
+                console.log('數量設定為:', value);
+            });
+            
+            // 也監聽change事件
+            quantityInput.addEventListener('change', function() {
+                let value = parseInt(this.value) || 1;
+                if (value > 30) {
+                    value = 30;
+                    this.value = 30;
+                }
+                if (value < 1) {
+                    value = 1;
+                    this.value = 1;
+                }
+                console.log('數量變更為:', value);
+            });
+        }
 
         function initInputModeToggle() {
             const modeRadios = document.querySelectorAll('input[name="inputMode"]');
@@ -1000,7 +1253,6 @@
             const phoneticButtons = document.querySelectorAll('.phonetic-btn');
             const clearButton = document.getElementById('clearSelection');
             
-            // 為每個注音符號按鈕添加點擊事件
             phoneticButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     this.classList.toggle('selected');
@@ -1008,7 +1260,6 @@
                 });
             });
             
-            // 清除全部按鈕
             clearButton.addEventListener('click', function() {
                 phoneticButtons.forEach(button => {
                     button.classList.remove('selected');
@@ -1025,7 +1276,6 @@
             
             selectedCountElement.textContent = selectedCount;
             
-            // 如果選擇數量超過需要數量，改變顏色提示
             if (selectedCount > requiredCount) {
                 selectedCountElement.classList.add('over-limit');
             } else {
@@ -1037,33 +1287,6 @@
             const gridSize = parseInt(document.querySelector('input[name="gridSize"]:checked').value);
             const requiredCount = gridSize * gridSize;
             document.getElementById('requiredCount').textContent = requiredCount;
-        }
-
-        function updateLayoutOptions() {
-            const selectedSize = document.querySelector('input[name="gridSize"]:checked').value;
-            const layout6Option = document.getElementById('layout-6-option');
-            const layout8Option = document.getElementById('layout-8-option');
-            const layout10Option = document.getElementById('layout-10-option');
-            const layout6Radio = document.getElementById('layout-6');
-            const layout8Radio = document.getElementById('layout-8');
-            const layout10Radio = document.getElementById('layout-10');
-            
-            if (selectedSize === '3') {
-                // 3x3時顯示所有選項
-                layout6Option.classList.remove('layout-option-hidden');
-                layout8Option.classList.remove('layout-option-hidden');
-                layout10Option.classList.remove('layout-option-hidden');
-            } else {
-                // 4x4和5x5時隱藏6個/頁、8個/頁和10個/頁選項
-                layout6Option.classList.add('layout-option-hidden');
-                layout8Option.classList.add('layout-option-hidden');
-                layout10Option.classList.add('layout-option-hidden');
-                
-                // 如果當前選中的是6個/頁、8個/頁或10個/頁，自動切換到4個/頁
-                if (layout6Radio.checked || layout8Radio.checked || layout10Radio.checked) {
-                    document.getElementById('layout-4').checked = true;
-                }
-            }
         }
     </script>
 </body>
